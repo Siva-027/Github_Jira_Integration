@@ -3,53 +3,66 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 
-url = "https://siva027.atlassian.net/rest/api/3/issue"
+from flask import Flask
 
-email = "toxicreyes07@gmail.com"
+app = Flask (__name__)
 
-API_TOKEN = os.getenv("JIRA_API_TOKEN")
+@app.route("/createJIRA", methods=['POST'])
 
-auth = HTTPBasicAuth(email, API_TOKEN)
+def createJIRA():  
 
-headers = {
-  "Accept": "application/json",
-  "Content-Type": "application/json"
-}
+    url = "https://siva027.atlassian.net/rest/api/3/issue"
 
-payload = json.dumps( {
-  "fields": {
-    "description": {
-      "content": [
-        {
-          "content": [
+    email = "toxicreyes07@gmail.com"
+
+    API_TOKEN = os.getenv("JIRA_API_TOKEN")
+
+    auth = HTTPBasicAuth(email, API_TOKEN)
+
+    headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json"
+    }
+
+    payload = json.dumps( {
+    "fields": {
+        "description": {
+        "content": [
             {
-              "text": "My first JIRA ticket to track the progress.",
-              "type": "text"
+            "content": [
+                {
+                "text": "My first JIRA ticket to track the progress.",
+                "type": "text"
+                }
+            ],
+            "type": "paragraph"
             }
-          ],
-          "type": "paragraph"
-        }
-      ],
-      "type": "doc",
-      "version": 1
+        ],
+        "type": "doc",
+        "version": 1
+        },
+        "issuetype": {
+        "id": "10003"
+        },
+        "project": {
+        "key": "SCRUM"
+        },
+        "summary": "Main order flow broken",
     },
-    "issuetype": {
-      "id": "10003"
-    },
-    "project": {
-      "key": "SCRUM"
-    },
-    "summary": "Main order flow broken",
-  },
-  "update": {}
-} )
+    "update": {}
+    } )
 
-response = requests.request(
-   "POST",
-   url,
-   data=payload,
-   headers=headers,
-   auth=auth
-)
+    response = requests.request(
+    "POST",
+    url,
+    data=payload,
+    headers=headers,
+    auth=auth
+    )
 
-print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+
+if __name__ =="__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+
